@@ -1,0 +1,12 @@
+{
+	"name": "@johntalton/ssd1306",
+	"version": "1.0.0",
+	"type": "module",
+	"scripts": {
+
+	},
+	"dependencies": {
+		"@johntalton/and-other-delights": "^6.0.0",
+		"@johntalton/bitsmush": "^1.0.0"
+	}
+}
