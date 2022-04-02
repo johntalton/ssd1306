@@ -1,13 +1,13 @@
 import { I2CAddressedBus, I2CBufferSource } from '@johntalton/and-other-delights'
 
 
-// async function writeCommand(addressedDev, sourceBuffer) {
+// async function writeCommand(addressedDev, bufferSource) {
 // 	const driver = addressedDev.i2cbus.driver
 // 	const dev = addressedDev.dev
 
 // 	const startOk = await driver.start(dev, false)
 // 	console.log({ startOk })
-// 	const writeOk = await driver.write(sourceBuffer.byteLength, sourceBuffer)
+// 	const writeOk = await driver.write(bufferSource.byteLength, bufferSource)
 // 	console.log({ writeOk })
 
 // 	const ackedOk = driver.read(1)
@@ -15,14 +15,14 @@ import { I2CAddressedBus, I2CBufferSource } from '@johntalton/and-other-delights
 
 // 	await driver.stop()
 
-// 	// const flushOk = await driver.readACKAll(sourceBuffer.byteLength)
+// 	// const flushOk = await driver.readACKAll(bufferSource.byteLength)
 // 	// console.log({ flushOk })
 // }
 
-async function writeCommand(addressedDev: I2CAddressedBus, sourceBuffer: I2CBufferSource) {
+async function writeCommand(addressedDev: I2CAddressedBus, bufferSource: I2CBufferSource) {
   await addressedDev.i2cWrite(Uint8Array.from([ 0x00 ]))
 
-	await addressedDev.i2cWrite(sourceBuffer)
+	await addressedDev.i2cWrite(bufferSource)
 }
 
 async function init(addressedDev: I2CAddressedBus) {
