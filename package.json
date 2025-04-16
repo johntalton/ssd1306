@@ -1,6 +1,6 @@
 {
 	"name": "@johntalton/ssd1306",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"type": "module",
 	"exports": {
 		".": "./lib/index.js"
@@ -10,10 +10,9 @@
 		"build:watch": "tsc --watch"
 	},
 	"dependencies": {
-		"@johntalton/and-other-delights": "^6.0.0",
-		"@johntalton/bitsmush": "^1.0.0"
+		"@johntalton/and-other-delights": "^8.3.0"
 	},
 	"devDependencies": {
-		"typescript": "^4.6.3"
+		"typescript": "^5.8.3"
 	}
 }
