@@ -8,7 +8,9 @@ import {
 	ScrollInterval,
 	Row,
 	MuxRatio,
-	PreChargePeriod
+	PreChargePeriod,
+	OscillatorFrequency,
+	ClockDivider
 } from './types.js'
 
 
@@ -38,7 +40,7 @@ export class SSD1306 {
 		return Common.setContinuousHorizontalScrolling(this.#addresssedBus, direction, startPage, endPage, interval)
 	}
 
-	async setVerticalAndHorizontalScrolling(direction: HorizontalScrollDirection, startPage: Page, endPage: Page, interval: ScrollInterval, verticalOffset) {
+	async setVerticalAndHorizontalScrolling(direction: HorizontalScrollDirection, startPage: Page, endPage: Page, interval: ScrollInterval, verticalOffset: Row) {
 		return Common.setVerticalAndHorizontalScrolling(this.#addresssedBus, direction, startPage, endPage, interval, verticalOffset)
 	}
 
@@ -66,8 +68,10 @@ export class SSD1306 {
 
 	async setDisplayOffset(offset) { return Common.setDisplayOffset(this.#addresssedBus, offset) }
 
+	async setCOMPinsHardware(altCom: boolean, leftRightRemap: boolean) { return Common.setCOMPinsHardware(this.#addresssedBus, altCom, leftRightRemap)}
+
 	// Timing
-	async setDisplayClock(clockDivider, oscillatorFrequency) { return Common.setDisplayClock(this.#addresssedBus, clockDivider, oscillatorFrequency) }
+	async setDisplayClock(clockDivider: ClockDivider, oscillatorFrequency: OscillatorFrequency) { return Common.setDisplayClock(this.#addresssedBus, clockDivider, oscillatorFrequency) }
 	async setPreChargePeriod(phase1Period: PreChargePeriod, phase2Period: PreChargePeriod) { return Common.setPreChargePeriod(this.#addresssedBus, phase1Period, phase2Period) }
 	async setVCOMHDeselectLevel(level) { return Common.setVCOMHDeselectLevel(this.#addresssedBus, level) }
 
@@ -79,20 +83,7 @@ export class SSD1306 {
 	setChargePump(enable: boolean = true) { return Common.setChargePump(this.#addresssedBus, enable) }
 
 	//
-	async status() {
-		const buffer = await this.#addresssedBus.i2cRead(1)
-		const u8 = ArrayBuffer.isView(buffer) ?
-			new Uint8Array(buffer.buffer, 0, 1) :
-			new Uint8Array(buffer, 0, 1)
-
-		const [ s ] = u8
-
-		const display = (s & 0b0100_0000) === 0
-
-		return {
-			display
-		}
-	}
+	async status() { return Common.status(this.#addresssedBus) }
 
 	//
 	async writeData() { return Common.writeData(this.#addresssedBus) }

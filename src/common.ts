@@ -9,7 +9,9 @@ import {
 	MuxRatio,
 	Row,
 	ScrollInterval,
-	PreChargePeriod
+	PreChargePeriod,
+	ClockDivider,
+	OscillatorFrequency
 } from './types.js'
 
 import {
@@ -120,7 +122,7 @@ export class Common {
 		return aBus.i2cWrite(Uint8ClampedArray.from([ MODE.COMMAND, command, DUMMY_00, B, C, D, DUMMY_00, DUMMY_FF ]))
 	}
 
-	static async setVerticalAndHorizontalScrolling(aBus: I2CAddressedBus, direction: HorizontalScrollDirection, startPage: Page, endPage: Page, interval: ScrollInterval, verticalOffset) {
+	static async setVerticalAndHorizontalScrolling(aBus: I2CAddressedBus, direction: HorizontalScrollDirection, startPage: Page, endPage: Page, interval: ScrollInterval, verticalOffset: Row) {
 		if(startPage > endPage) { throw new Error('end must be larger or equal to start') }
 		const B = startPage & MASK_3_BIT
 		const C = interval & MASK_3_BIT
@@ -202,7 +204,6 @@ export class Common {
 	}
 
 
-
 	// Hardware
 	static async setDisplayStartLine(aBus: I2CAddressedBus, start) {
 		const command = COMMAND.DISPLAY_LINE_START_0 | (start & MASK_6_BIT)
@@ -235,17 +236,32 @@ export class Common {
 		return aBus.i2cWrite(Uint8ClampedArray.from([ MODE.COMMAND, COMMAND.DISPLAY_OFFSET, A ]))
 	}
 
-	// static async setCOMPinsHardware(aBus: I2CAddressedBus, altCom: boolean, leftRightRemap: boolean) {
+	static async setCOMPinsHardware(aBus: I2CAddressedBus, altCom: boolean, leftRightRemap: boolean) {
+		const BASE_A = 0b0000_0010
+		const HIGH = 0b1
+		const LOW = 0b0
+		const ALT_OFFSET = 4
+		const REMAP_OFFSET = 5
+		const ALT_COM_SET = HIGH << ALT_OFFSET
+		const REMAP_SET = HIGH << REMAP_OFFSET
 
-	// 	return aBus.i2cWrite(Uint8ClampedArray.from([ MODE.COMMAND,  ]))
-	// }
+		const alt = altCom ? ALT_COM_SET : LOW
+		const remap = leftRightRemap ? REMAP_SET : LOW
+
+		const A = BASE_A | alt | remap
+		return aBus.i2cWrite(Uint8ClampedArray.from([ MODE.COMMAND, COMMAND.COM_PINS_HARDWARE_CONFIG, A ]))
+	}
 
 
 
 	// Timing
-	static async setDisplayClock(aBus: I2CAddressedBus, clockDivider, oscillatorFrequency) {
+	static async setDisplayClock(aBus: I2CAddressedBus, clockDivider: ClockDivider, oscillatorFrequency: OscillatorFrequency) {
 		const upper4 = clockDivider & MASK_4_BIT
 		const lower4 = oscillatorFrequency & MASK_4_BIT
+
+		if(upper4 !== clockDivider) { throw new Error('invalid clockDivider') }
+		if(lower4 !== oscillatorFrequency) { throw new Error('invalid oscillatorFrequency') }
+
 		const A = (upper4 << NIBBLE_SIZE) | lower4
 		return aBus.i2cWrite(Uint8ClampedArray.from([ MODE.COMMAND, COMMAND.DISPLAY_CLOCK_DIVIDER_OSCILLATOR_FREQ, A ]))
 	}
@@ -287,7 +303,7 @@ export class Common {
 
 	//
 	static async writeData(aBus: I2CAddressedBus) {
-		const step = 32
+		const step = 60
 
 		for(let i = 0; i < LOGO.length; i += step) {
 			const buffer = LOGO.slice(i, i + step)
@@ -345,5 +361,33 @@ export class Common {
 		for(let i = 0; i <  times; i +=1) {
 			await aBus.i2cWrite(Uint8Array.from([ MODE.DATA, ...buffer ]))
 		}
+	}
+
+
+	// read
+	static async status(aBus: I2CAddressedBus) {
+		const DISPLAY_STATUS_BIT_MASK = 0b0100_0000
+		const STATUS_LENGTH = 1
+
+		const buffer = await aBus.i2cRead(STATUS_LENGTH)
+		const u8 = ArrayBuffer.isView(buffer) ?
+			new Uint8Array(buffer.buffer, 0, STATUS_LENGTH) :
+			new Uint8Array(buffer, 0, STATUS_LENGTH)
+
+		const [ s ] = u8
+
+		const display = (s & DISPLAY_STATUS_BIT_MASK) === 0
+
+		return {
+			display
+		}
+	}
+
+	async readData(aBus: I2CAddressedBus, length: number) {
+		const buffer = await aBus.i2cRead(length)
+
+		return ArrayBuffer.isView(buffer) ?
+			new Uint8Array(buffer.buffer, 0, length) :
+			new Uint8Array(buffer, 0, length)
 	}
 }
