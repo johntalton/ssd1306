@@ -58,7 +58,7 @@ export class SSD1306 {
 	async setPageModeStartAddress(start: Page) { return Common.setPageModeStartAddress(this.#addresssedBus, start) }
 
 	// Hardware
-	async setDisplayStartLine(start) { return Common.setDisplayStartLine(this.#addresssedBus, start) }
+	async setDisplayStartLine(start: Row) { return Common.setDisplayStartLine(this.#addresssedBus, start) }
 
 	async setSegmentMap(remap: boolean = false) { return Common.setSegmentMap(this.#addresssedBus,remap) }
 
@@ -66,7 +66,7 @@ export class SSD1306 {
 
 	async setComOutputScanDirection(remap: boolean) { return Common.setComOutputScanDirection(this.#addresssedBus, remap) }
 
-	async setDisplayOffset(offset) { return Common.setDisplayOffset(this.#addresssedBus, offset) }
+	async setDisplayOffset(offset: Row) { return Common.setDisplayOffset(this.#addresssedBus, offset) }
 
 	async setCOMPinsHardware(altCom: boolean, leftRightRemap: boolean) { return Common.setCOMPinsHardware(this.#addresssedBus, altCom, leftRightRemap)}
 
@@ -86,7 +86,7 @@ export class SSD1306 {
 	async status() { return Common.status(this.#addresssedBus) }
 
 	//
-	async writeData() { return Common.writeData(this.#addresssedBus) }
+	async writeData(ramData: Array<number>) { return Common.writeData(this.#addresssedBus, ramData) }
 
 	// async readData() {}
 

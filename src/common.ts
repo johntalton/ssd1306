@@ -1,7 +1,5 @@
 import { I2CAddressedBus } from '@johntalton/and-other-delights'
 
-import { LOGO } from '../logo.js'
-
 import {
 	Page, Column,
 	MemoryAddressingMode,
@@ -149,11 +147,10 @@ export class Common {
 		const B = rows & MASK_7_BIT
 
 		if(A !== top) { throw new Error('invalid top') }
-		if(A !== rows) { throw new Error('invalid rows') }
+		if(B !== rows) { throw new Error('invalid rows') }
 
 		return aBus.i2cWrite(Uint8ClampedArray.from([ MODE.COMMAND, COMMAND.VERTICAL_SCROLL_AREA, A, B ]))
 	}
-
 
 	// Addressing
 	// static async setPageModeLowerColumnStartAddress(aBus: I2CAddressedBus, ) {
@@ -203,10 +200,13 @@ export class Common {
 		return aBus.i2cWrite(Uint8ClampedArray.from([ MODE.COMMAND, command ]))
 	}
 
-
 	// Hardware
-	static async setDisplayStartLine(aBus: I2CAddressedBus, start) {
-		const command = COMMAND.DISPLAY_LINE_START_0 | (start & MASK_6_BIT)
+	static async setDisplayStartLine(aBus: I2CAddressedBus, start: Row) {
+		const X = start & MASK_6_BIT
+
+		if(X !== start) { throw new Error('invalid start') }
+
+		const command = COMMAND.DISPLAY_LINE_START_0 | X
 		return aBus.i2cWrite(Uint8ClampedArray.from([ MODE.COMMAND, command ]))
 	}
 
@@ -231,8 +231,11 @@ export class Common {
 		return aBus.i2cWrite(Uint8ClampedArray.from([ MODE.COMMAND, command ]))
 	}
 
-	static async setDisplayOffset(aBus: I2CAddressedBus, offset) {
+	static async setDisplayOffset(aBus: I2CAddressedBus, offset: Row) {
 		const A = offset & MASK_6_BIT
+
+		if(A !== offset) { throw new Error('invalid offset') }
+
 		return aBus.i2cWrite(Uint8ClampedArray.from([ MODE.COMMAND, COMMAND.DISPLAY_OFFSET, A ]))
 	}
 
@@ -251,8 +254,6 @@ export class Common {
 		const A = BASE_A | alt | remap
 		return aBus.i2cWrite(Uint8ClampedArray.from([ MODE.COMMAND, COMMAND.COM_PINS_HARDWARE_CONFIG, A ]))
 	}
-
-
 
 	// Timing
 	static async setDisplayClock(aBus: I2CAddressedBus, clockDivider: ClockDivider, oscillatorFrequency: OscillatorFrequency) {
@@ -302,11 +303,11 @@ export class Common {
 	}
 
 	//
-	static async writeData(aBus: I2CAddressedBus) {
+	static async writeData(aBus: I2CAddressedBus, ramData: Array<number>) {
 		const step = 60
 
-		for(let i = 0; i < LOGO.length; i += step) {
-			const buffer = LOGO.slice(i, i + step)
+		for(let i = 0; i < ramData.length; i += step) {
+			const buffer = ramData.slice(i, i + step)
 			await aBus.i2cWrite(Uint8Array.from([ MODE.DATA, ...buffer ]))
 		}
 	}
