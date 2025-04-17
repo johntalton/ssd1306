@@ -268,7 +268,9 @@ export class Common {
 	}
 
 	static async setPreChargePeriod(aBus: I2CAddressedBus, phase1Period: PreChargePeriod, phase2Period: PreChargePeriod) {
+		// @ts-ignore
 		if(phase1Period === 0) { throw new Error('phase 1 period of zero is invalid') }
+		 // @ts-ignore
 		if(phase2Period === 0) { throw new Error('phase 2 period of zero is invalid') }
 
 		const upper4 = phase1Period & MASK_4_BIT
@@ -281,7 +283,7 @@ export class Common {
 		return aBus.i2cWrite(Uint8ClampedArray.from([ MODE.COMMAND, COMMAND.PRE_CHARGE_PERIOD, A ]))
 	}
 
-	static async setVCOMHDeselectLevel(aBus: I2CAddressedBus, level) {
+	static async setVCOMHDeselectLevel(aBus: I2CAddressedBus, level: number) {
 		const A = (level & MASK_3_BIT) << NIBBLE_SIZE
 		return aBus.i2cWrite(Uint8ClampedArray.from([ MODE.COMMAND, COMMAND.V_COMH_DESELECT_LEVEL, A ]))
 	}

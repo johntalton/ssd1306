@@ -73,7 +73,7 @@ export class SSD1306 {
 	// Timing
 	async setDisplayClock(clockDivider: ClockDivider, oscillatorFrequency: OscillatorFrequency) { return Common.setDisplayClock(this.#addresssedBus, clockDivider, oscillatorFrequency) }
 	async setPreChargePeriod(phase1Period: PreChargePeriod, phase2Period: PreChargePeriod) { return Common.setPreChargePeriod(this.#addresssedBus, phase1Period, phase2Period) }
-	async setVCOMHDeselectLevel(level) { return Common.setVCOMHDeselectLevel(this.#addresssedBus, level) }
+	async setVCOMHDeselectLevel(level: number) { return Common.setVCOMHDeselectLevel(this.#addresssedBus, level) }
 
 
 	// No Op
