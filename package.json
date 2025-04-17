@@ -5,6 +5,11 @@
 	"exports": {
 		".": "./lib/index.js"
 	},
+	"files": [
+    "src/**/*.ts",
+		"lib/**/*.js", "lib/**/*.js.map",
+		"lib/**/*.d.ts", "lib/**/*.d.ts.map"
+  ],
 	"scripts": {
 		"build": "tsc",
 		"build:watch": "tsc --watch"
