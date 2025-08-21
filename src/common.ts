@@ -306,66 +306,8 @@ export class Common {
 
 	//
 	static async writeData(aBus: I2CAddressedBus, ramData: Array<number>) {
-		const step = 60
-
-		for(let i = 0; i < ramData.length; i += step) {
-			const buffer = ramData.slice(i, i + step)
-			await aBus.i2cWrite(Uint8Array.from([ MODE.DATA, ...buffer ]))
-		}
+		return aBus.i2cWrite(Uint8Array.from([ MODE.DATA, ...ramData ]))
 	}
-
-	static async _writeData(aBus: I2CAddressedBus) {
-
-
-		const pattern1 = [
-			0b1000_0000,
-			0b1100_0000,
-			0b1110_0000,
-			0b1111_1111,
-			0b1110_0000,
-			0b1100_0000,
-			0b1000_0000,
-			0b0000_0000
-		]
-
-		const pattern2 = [
-			0b1000_0000,
-			0b1100_0000,
-			0b1110_0000,
-			0b1111_0000,
-			0b1110_0000,
-			0b1100_0000,
-			0b1000_0000,
-			0b0000_0000
-		]
-
-		const pattern3 = [
-			0b0000_1100,
-			0b0000_1100,
-			0b0000_1100,
-			0b0000_1100,
-			0b0000_1100,
-			0b0000_1100,
-			0b0000_1100,
-			0b0000_1100
-		]
-
-		const buffer = [
-			...pattern1,
-			...pattern2,
-			...pattern3,
-			...pattern3
-		]
-
-		const pages = 8
-		const segments = 128
-		const times = (segments / buffer.length) * pages
-
-		for(let i = 0; i <  times; i +=1) {
-			await aBus.i2cWrite(Uint8Array.from([ MODE.DATA, ...buffer ]))
-		}
-	}
-
 
 	// read
 	static async status(aBus: I2CAddressedBus) {
