@@ -1,6 +1,7 @@
 {
 	"name": "@johntalton/ssd1306",
-	"version": "2.1.0",
+	"version": "2.1.1",
+	"license": "MIT",
 	"type": "module",
 	"exports": {
 		".": "./lib/index.js"
@@ -19,5 +20,8 @@
 	},
 	"devDependencies": {
 		"typescript": "^5.9.2"
+	},
+	"repository": {
+		"url": "https://github.com/johntalton/ssd1306"
 	}
 }
